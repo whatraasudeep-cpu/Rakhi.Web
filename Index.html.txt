@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title> Rakhi </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #090909;
+      --card: #121212;
+      --red: #e63946;
+      --red-dark: #8b1e2d;
+      --text: #f5f5f5;
+      --muted: #9b9b9b;
+      --line: rgba(255,255,255,0.08);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #1d0b0d 0%, #090909 45%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* SUBTLE BACKGROUND GRID */
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+
+      background-size: 40px 40px;
+
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* MAIN SCREEN */
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 25px;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.7s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* CONTAINER */
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      text-align: center;
+    }
+
+    /* ICON */
+
+    .shield {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 25px;
+
+      border: 2px solid var(--red);
+      border-radius: 22px 22px 35px 35px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 35px;
+
+      box-shadow:
+        0 0 30px rgba(230,57,70,0.25);
+    }
+
+    /* HEADINGS */
+
+    .eyebrow {
+      color: var(--red);
+      letter-spacing: 3px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 8vw, 55px);
+      margin-bottom: 15px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    /* INFO BOX */
+
+    .info-box {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--line);
+
+      border-radius: 18px;
+
+      padding: 20px;
+      margin-bottom: 25px;
+
+      text-align: left;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+
+      padding: 12px 0;
+
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .value {
+      color: white;
+      font-weight: bold;
+    }
+
+    .verified {
+      color: #55d68c;
+    }
+
+    /* BUTTON */
+
+    button {
+      width: 100%;
+      padding: 17px;
+
+      border: none;
+      border-radius: 14px;
+
+      background: var(--red);
+      color: white;
+
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 1px;
+
+      cursor: pointer;
+
+      transition: 0.25s ease;
+
+      box-shadow:
+        0 8px 25px rgba(230,57,70,0.25);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: #f04452;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .tiny-text {
+      margin-top: 18px;
+      color: #666;
+      font-size: 12px;
+    }
+
+    /* LOADING SCREEN */
+
+    .terminal {
+      text-align: left;
+
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+
+      border-radius: 15px;
+
+      padding: 25px;
+
+      font-family: monospace;
+
+      min-height: 260px;
+
+      box-shadow:
+        0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .terminal-line {
+      color: #aaa;
+      margin-bottom: 14px;
+
+      opacity: 0;
+
+      animation: terminalAppear 0.3s forwards;
+    }
+
+    .terminal-line.success {
+      color: #55d68c;
+    }
+
+    .terminal-line.warning {
+      color: var(--red);
+    }
+
+    @keyframes terminalAppear {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* LETTER */
+
+    .letter-wrapper {
+      width: 100%;
+      max-width: 750px;
+    }
+
+    .letter-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .letter {
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,255,255,0.055),
+          rgba(255,255,255,0.02)
+        );
+
+      border: 1px solid var(--line);
+
+      border-radius: 22px;
+
+      padding: clamp(25px, 7vw, 55px);
+
+      text-align: left;
+
+      line-height: 1.9;
+
+      box-shadow:
+        0 20px 70px rgba(0,0,0,0.35);
+    }
+
+    .letter h2 {
+      font-size: 32px;
+      margin-bottom: 25px;
+      color: white;
+    }
+
+    .letter p {
+      color: #d0d0d0;
+      margin-bottom: 22px;
+      font-size: 16px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 35px 0;
+    }
+
+    .jokes-aside {
+      color: var(--red) !important;
+      font-weight: bold;
+      font-size: 17px !important;
+    }
+
+    .signature {
+      margin-top: 35px;
+      color: white !important;
+      font-size: 18px !important;
+    }
+
+    .continue-button {
+      margin-top: 25px;
+    }
+
+    /* FINAL SCREEN */
+
+    .final-box {
+      background:
+        radial-gradient(
+          circle at top,
+          rgba(230,57,70,0.15),
+          rgba(255,255,255,0.02)
+        );
+
+      border: 1px solid rgba(230,57,70,0.35);
+
+      padding: 45px 25px;
+
+      border-radius: 25px;
+
+      box-shadow:
+        0 0 50px rgba(230,57,70,0.12);
+    }
+
+    .status {
+      display: inline-block;
+
+      margin-top: 20px;
+      margin-bottom: 25px;
+
+      padding: 10px 18px;
+
+      border-radius: 50px;
+
+      background: rgba(85,214,140,0.12);
+      border: 1px solid rgba(85,214,140,0.35);
+
+      color: #55d68c;
+
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-size: 13px;
+    }
+
+    .heart {
+      font-size: 60px;
+      margin-bottom: 20px;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.08);
+      }
+    }
+
+    .final-note {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 20px;
+    }
+
+    .small-joke {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #666;
+      font-style: italic;
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+  <!-- =========================
+       SCREEN 1: VERIFICATION
+  ========================== -->
+
+  <section class="screen active" id="screen1">
+
+    <div class="container">
+
+      <div class="shield">🛡️</div>
+
+      <div class="eyebrow">
+        SIBLING INTELLIGENCE SYSTEM [S.I.S]
+      </div>
+
+      <h1>Personal Message Detected</h1>
+
+      <p class="subtitle">
+        An encrypted message has been linked to your
+        Anti-Ragebait Protection Card.
+      </p>
+
+
+      <div class="info-box">
+
+        <div class="info-row">
+          <span class="label">CARDHOLDER</span>
+          <span class="value">Priya</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">CARD STATUS</span>
+          <span class="value verified">● VERIFIED</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">SIBLING BOND</span>
+          <span class="value">100%</span>
+        </div>
+
+      </div>
+
+
+      <button onclick="startDecrypt()">
+        OPEN PERSONAL MESSAGE →
+      </button>
+
+      <p class="tiny-text">
+        Warning: May contain unexpected stuff.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       SCREEN 2: DECRYPTING
+  ========================== -->
+
+  <section class="screen" id="screen2">
+
+    <div class="container">
+
+      <div class="eyebrow">
+        DECRYPTING MESSAGE
+      </div>
+
+      <div class="terminal" id="terminal">
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       SCREEN 3: LETTER
+  ========================== -->
+
+  <section class="screen" id="screen3">
+
+    <div class="letter-wrapper">
+
+      <div class="letter-header">
+
+        <div class="eyebrow">
+          ENCRYPTED MESSAGE SUCCESSFULLY OPENED
+        </div>
+
+        <h1>A Happy rakhi didiiiiii ❤️</h1>
+
+      </div>
+
+
+      <div class="letter">
+
+        <h2>WSG TWIN,</h2>
+
+
+        <p>
+          I know i could've gotten you something normal like a sane person but as you know
+          im insane and i dont do normal stuff. you know adding a twist to everything is just
+          how i roll🤣.
+        </p>
+
+
+        <p>
+          So congrats. you are now protected from random ragebait by yo majestic brother.😒 
+          trust me dil pe patthar rakh ke banaya hai ye.
+          so yea use it wisely cuz its single time use only.
+          if u wana renew it then gimme a kitkat😁
+        </p>
+
+
+        <p>
+          Obviously, we've had many fights, awkward stages (6th....)
+          and alot more stuff like that. but ultimately we're still pretty close.
+          so yea i hope we stay close like this despite fighting like siblings
+        </p>
+
+
+        <p>
+          But honestly, everything was worth it cuz after every fight we laughed it off
+          and everytime either of us does something stupid, both of us cant help it but laugh 
+          like we're possesed😹.Also dont be insecure about stuff like ur laugh or ur smile 
+          cuz no one cares about how u look when your laughing. and even if they do, it aint gonna affect you
+          and if it does then you know who to text, call or talk to.
+        </p>
+
+
+        <div class="divider"></div>
+
+
+        <p class="jokes-aside">
+          Okay. Jokes aside for a second.
+        </p>
+
+        <p>
+          I genuinely wanted to make something for you instead of just
+          buying something random like usual. i want this rakhi to feel special for ya.
+        </p>
+
+
+        <p>
+          Even though I dont really show it, u mean alot to me and losing you is something im not prepared for. 
+          you know, u really thought me alot of stuff and lowkey changed me for the better and i cant thank you 
+          enough for that
+        </p>
+
+
+        <p>
+          I know this entire website stuff is really unnecessary but i had no clue 
+          what to give you😅. ik i could've given u smtg simple but that isnt what i do. 😹
+          also ill get u the camera next year maybe. if we're still in touch with eachother.
+        </p>
+
+
+        <p>
+          So yeah. Thank's for always being there for not giving up on me even when i almost quit😭. i really appreciate it sis💝
+        </p>
+
+
+        <p>
+          And even though i wont stop annoying you, remember that i'm genuinely grateful for a sister like you in my life❤️‍🩹.
+        </p>
+
+
+        <p class="signature">
+
+          Happy Raksha Bandhan twn ❤️<br><br>
+
+          From,<br>
+          <strong>Your Annoying Brother 🫡</strong>
+
+        </p>
+
+      </div>
+
+
+      <button
+        class="continue-button"
+        onclick="showFinal()"
+      >
+        ONE FINAL THING →
+      </button>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       SCREEN 4: FINAL
+  ========================== -->
+
+  <section class="screen" id="screen4">
+
+    <div class="container">
+
+      <div class="final-box">
+
+        <div class="heart">❤️‍🩹</div>
+
+        <div class="eyebrow">
+          FINAL VERIFICATION
+        </div>
+
+        <h1>
+          Anti-Ragebait Protection
+        </h1>
+
+        <div class="status">
+          ● ACTIVATED
+        </div>
+
+
+        <p class="subtitle">
+          This protection remains valid till next rakhi.
+        </p>
+
+
+        <p class="final-note">
+          Your sibling bond has been successfully verified.<br>
+          No expiration date detected.
+        </p>
+
+
+        <p class="small-joke">
+          *Terms and conditions may be temporarily ignored if you do something utterly stupid*
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+
+  <script>
+
+    function switchScreen(screenId) {
+
+      document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+
+          screen.classList.remove("active");
+
+        });
+
+      document
+        .getElementById(screenId)
+        .classList.add("active");
+
+    }
+
+
+
+    function startDecrypt() {
+
+      switchScreen("screen2");
+
+      const terminal =
+        document.getElementById("terminal");
+
+      terminal.innerHTML = "";
+
+
+      const lines = [
+
+        {
+          text: "[✓] Connecting to S.I.S database...",
+          class: "success"
+        },
+
+        {
+          text: "[✓] Verifying cardholder Identity: PRIYA",
+          class: "success"
+        },
+
+        {
+          text: "[✓] Checking sibling bond...",
+          class: "success"
+        },
+
+        {
+          text: "[⚠] Removing unnecessary ragebait...",
+          class: "warning"
+        },
+
+        {
+          text: "[✓] Loading personal message...",
+          class: "success"
+        },
+
+        {
+          text: "[✓] Emotional content detected.",
+          class: "success"
+        },
+
+        {
+          text: "",
+          class: ""
+        },
+
+        {
+          text: "0% ragebait detected.",
+          class: "success"
+        },
+
+        {
+          text: "100% genuine message detected.",
+          class: "success"
+        }
+
+      ];
+
+
+      lines.forEach((line, index) => {
+
+        setTimeout(() => {
+
+          const element =
+            document.createElement("div");
+
+          element.className =
+            "terminal-line " + line.class;
+
+          element.textContent =
+            line.text;
+
+          terminal.appendChild(element);
+
+
+          terminal.scrollTop =
+            terminal.scrollHeight;
+
+
+          if (index === lines.length - 1) {
+
+            setTimeout(() => {
+
+              switchScreen("screen3");
+
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+              });
+
+            }, 1300);
+
+          }
+
+        }, index * 550);
+
+      });
+
+    }
+
+
+
+    function showFinal() {
+
+      switchScreen("screen4");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+  </script>
+
+
+</body>
+</html>
